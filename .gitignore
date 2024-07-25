@@ -1,0 +1,15 @@
+node_modules/
+dist/
+npm-debug.log*
+*.tsbuildinfo
+logs/
+*.log
+.npm
+.env
+*~
+*.jsx
+*.js.map
+*.jsx.map
+*.d.ts
+*.d.ts.map
+

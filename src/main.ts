@@ -4,8 +4,6 @@ import { replaceCode } from './command/replaceCode';
 import { OpenAIClient } from './client/openaiClient';
 
 const program = new Command();
-const clientCreator = (systemPrompt: string) =>
-  new OpenAIClient({ systemPrompt });
 
 program
   .name('my-llm-tools')
@@ -21,7 +19,12 @@ program
   .action(async (options) => {
     const { srcPath, testPath, description } = options;
     if (srcPath && testPath) {
-      await generateTestCode(srcPath, testPath, description);
+      await generateTestCode(
+        (systemPrompt: string) => new OpenAIClient({ systemPrompt }),
+        srcPath,
+        testPath,
+        description
+      );
       return undefined;
     } else {
       console.error('Both --src-path and --test-path must be provided.');
@@ -36,7 +39,11 @@ program
   .action(async (options) => {
     const { srcPath, description } = options;
     if (srcPath && description) {
-      await replaceCode(srcPath, description);
+      await replaceCode(
+        (systemPrompt: string) => new OpenAIClient({ systemPrompt }),
+        srcPath,
+        description
+      );
       return undefined;
     } else {
       console.error('');

@@ -2,6 +2,10 @@ import { OpenAI } from 'openai';
 import { BaseChatLLMClient } from './llmClient';
 
 type OpenAIModel = 'gpt-4o' | 'gpt-4o-mini';
+type OpenAIChatMessage = {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+};
 
 export class OpenAIClient extends BaseChatLLMClient {
   private openai: OpenAI;
@@ -44,9 +48,18 @@ export class OpenAIClient extends BaseChatLLMClient {
   }
 
   protected async fetchResponse(prompt: string): Promise<unknown> {
+    const messages: OpenAIChatMessage[] = [];
+
+    if (this.context.systemPrompt) {
+      messages.push({ role: 'system', content: this.context.systemPrompt });
+    }
+
+    messages.push(...this.context.histories);
+    messages.push({ role: 'user', content: prompt });
+
     return await this.openai.chat.completions.create({
       model: this.model ?? 'gpt-4o',
-      messages: this.messages.concat({ role: 'user', content: prompt }),
+      messages: messages,
       stream: false,
     });
   }

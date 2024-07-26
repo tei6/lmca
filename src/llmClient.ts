@@ -1,4 +1,4 @@
-type ChatRole = 'system' | 'user' | 'assistant';
+type ChatRole = 'user' | 'assistant';
 
 export interface LLMClient {
   chat(prompt: string): Promise<string>;
@@ -10,18 +10,30 @@ export interface Message {
   content: string;
 }
 
+export interface ChatContext {
+  systemPrompt?: string;
+  histories: Message[];
+}
+
 export abstract class BaseChatLLMClient {
-  protected messages: Message[] = [];
+  protected context: ChatContext;
 
   constructor(systemPrompt?: string) {
-    if (systemPrompt) {
-      this.messages = [{ role: 'system', content: systemPrompt }];
-    }
+    this.context = {
+      systemPrompt: systemPrompt,
+      histories: [],
+    };
   }
 
   protected appendHistory(question: string, answer: string): void {
-    this.messages.push({ role: 'user', content: question });
-    this.messages.push({ role: 'assistant', content: answer });
+    this.context.histories.push({
+      role: 'user',
+      content: question,
+    });
+    this.context.histories.push({
+      role: 'assistant',
+      content: answer,
+    });
   }
 
   protected abstract fromResponse(response: unknown): string;
@@ -40,8 +52,6 @@ export abstract class BaseChatLLMClient {
   }
 
   clear(): void {
-    this.messages = this.messages.filter(
-      (message) => message.role === 'system'
-    );
+    this.context.histories = [];
   }
 }

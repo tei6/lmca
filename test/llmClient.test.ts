@@ -1,4 +1,4 @@
-import { BaseChatLLMClient } from '../src/llmClient';
+import { BaseChatLLMClient } from '../src/client/llmClient';
 
 class MockLLMClient extends BaseChatLLMClient {
   fromResponse(response: unknown): string {

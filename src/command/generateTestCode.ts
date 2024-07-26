@@ -1,8 +1,9 @@
 import dedent from 'dedent';
-import { OpenAIClient } from './openaiClient';
-import { readFileOrEmpty, writeToFile } from './util/file';
+import { readFileOrEmpty, writeToFile } from '../util/file';
+import { BaseChatLLMClient } from '../client/llmClient';
 
 export async function generateTestCode(
+  clientCreator: (systemPrompt: string) => BaseChatLLMClient,
   srcPath: string,
   testPath: string,
   description?: string
@@ -49,7 +50,7 @@ export async function generateTestCode(
     DO NOT include the \`\`\` that indicates the start and end of a code block.
   `);
 
-  const client = new OpenAIClient({ systemPrompt });
+  const client = clientCreator(systemPrompt);
 
   const contentString = dedent(`
     ${description ? `<description>\n${description}\n</description>\n\n` : ''}

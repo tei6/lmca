@@ -18,15 +18,15 @@ describe('BaseChatLLMClient', () => {
   });
 
   describe('constructor', () => {
-    it('should initialize messages with system prompt if provided', () => {
+    it('should initialize context.systemPrompt if provided', () => {
       const clientWithSystemPrompt = new MockLLMClient('Hello System');
-      expect(clientWithSystemPrompt['messages']).toEqual([
-        { role: 'system', content: 'Hello System' },
-      ]);
+      expect(clientWithSystemPrompt['context'].systemPrompt).toEqual(
+        'Hello System'
+      );
     });
 
-    it('should initialize messages as an empty array if no system prompt is provided', () => {
-      expect(client['messages']).toEqual([]);
+    it('should initialize context.histories as an empty array if no system prompt is provided', () => {
+      expect(client['context'].histories).toEqual([]);
     });
   });
 
@@ -38,7 +38,7 @@ describe('BaseChatLLMClient', () => {
       const response = await client.chat(prompt);
 
       expect(response).toBe(expectedAnswer);
-      expect(client['messages']).toEqual([
+      expect(client['context'].histories).toEqual([
         { role: 'user', content: prompt },
         { role: 'assistant', content: expectedAnswer },
       ]);
@@ -46,29 +46,29 @@ describe('BaseChatLLMClient', () => {
   });
 
   describe('clear', () => {
-    it('should clear all messages except system prompt', () => {
+    it('should clear all conversation histories', () => {
       client = new MockLLMClient('Hello System');
-      client['messages'].push(
+      client['context'].histories.push(
         { role: 'user', content: 'User message' },
         { role: 'assistant', content: 'Assistant message' }
       );
 
       client.clear();
 
-      expect(client['messages']).toEqual([
-        { role: 'system', content: 'Hello System' },
-      ]);
+      expect(client['context'].histories).toEqual([]);
+      expect(client['context'].systemPrompt).toEqual('Hello System');
     });
 
     it('should clear all messages if no system prompt is present', () => {
-      client['messages'].push(
+      client['context'].histories.push(
         { role: 'user', content: 'User message' },
         { role: 'assistant', content: 'Assistant message' }
       );
 
       client.clear();
 
-      expect(client['messages']).toEqual([]);
+      expect(client['context'].histories).toEqual([]);
+      expect(client['context'].systemPrompt).toBeUndefined();
     });
   });
 
@@ -79,7 +79,7 @@ describe('BaseChatLLMClient', () => {
 
       client['appendHistory'](question, answer);
 
-      expect(client['messages']).toEqual([
+      expect(client['context'].histories).toEqual([
         { role: 'user', content: question },
         { role: 'assistant', content: answer },
       ]);

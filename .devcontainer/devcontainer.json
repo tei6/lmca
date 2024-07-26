@@ -1,20 +1,19 @@
 {
-    "name": "my-llm-script-dev-container",
-    "dockerFile": "Dockerfile",
-  
-    "customizations": {
-      "vscode": {
-        "settings": {
-          "terminal.integrated.shell.linux": "/bin/bash"
-        },
-        "extensions": [
-          "dbaeumer.vscode-eslint",
-          "esbenp.prettier-vscode",
-          "ms-vscode.vscode-typescript-tslint-plugin"
-        ]
-      }
-    },
-  
-    "postCreateCommand": "npm install"
+  "name": "my-llm-script-dev-container",
+  "dockerFile": "Dockerfile",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-tslint-plugin"
+      ]
+    }
+  },
+
+  "postCreateCommand": "npm install"
 }
-  

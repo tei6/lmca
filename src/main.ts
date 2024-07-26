@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { generateTestCode } from './command/generateTestCode';
 import { replaceCode } from './command/replaceCode';
+import { fillCode } from './command/fillCode'; // Import the new fillCode function
 import { OpenAIClient } from './client/openaiClient';
 
 const program = new Command();
@@ -8,14 +9,23 @@ const program = new Command();
 program
   .name('my-llm-tools')
   .description('A simple CLI tool that works with LLM')
-  .version('1.0.0');
+  .version('0.1.0');
 
 program
-  .command('test')
-  .description('about software test')
-  .option('-s, --src-path <path>', 'Source path')
-  .option('-t, --test-path <path>', 'Test path')
-  .option('-d, --description <description>', 'Description')
+  .command('gen-test')
+  .description('Generate test code based on the provided source code')
+  .option(
+    '-s, --src-path <path>',
+    'Specify the path to the source code file or directory to be analyzed'
+  )
+  .option(
+    '-t, --test-path <path>',
+    'Specify the path where the generated test code should be saved'
+  )
+  .option(
+    '-d, --description <description>',
+    'Provide a description or context for the test code generation process'
+  )
   .action(async (options) => {
     const { srcPath, testPath, description } = options;
     if (srcPath && testPath) {
@@ -32,10 +42,16 @@ program
   });
 
 program
-  .command('replace')
+  .command('rewrite')
   .description('Replace content in the specified source file')
-  .option('-s, --src-path <path>', 'Source path')
-  .option('-d, --description <description>', 'Description')
+  .option(
+    '-s, --src-path <path>',
+    'Specify the path to the source code file where content will be replaced'
+  )
+  .option(
+    '-d, --description <description>',
+    'Provide a description or context for the content replacement process'
+  )
   .action(async (options) => {
     const { srcPath, description } = options;
     if (srcPath && description) {
@@ -46,7 +62,34 @@ program
       );
       return undefined;
     } else {
-      console.error('');
+      console.error('Both --src-path and --description must be provided.');
+    }
+  });
+
+program
+  .command('fill')
+  .description(
+    'Replace content within <fill></fill> tags in the specified source file'
+  )
+  .option(
+    '-s, --src-path <path>',
+    'Specify the path to the source code file where content will be replaced'
+  )
+  .option(
+    '-d, --description <description>',
+    'Provide a description or context for the content replacement process'
+  )
+  .action(async (options) => {
+    const { srcPath, description } = options;
+    if (srcPath && description) {
+      await fillCode(
+        (systemPrompt: string) => new OpenAIClient({ systemPrompt }),
+        srcPath,
+        description
+      );
+      return undefined;
+    } else {
+      console.error('Both --src-path and --description must be provided.');
     }
   });
 

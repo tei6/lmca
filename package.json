@@ -4,7 +4,7 @@
   "description": "my llm script for develop software.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "esbuild src/command.ts --bundle --outfile=dist/command.js --platform=node",
+    "build": "esbuild src/main.ts --bundle --outfile=dist/main.js --platform=node",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",

@@ -1,5 +1,5 @@
 {
-  "name": "my-llm-script-dev-container",
+  "name": "language-model-coding-assistant-dev-container",
   "dockerFile": "Dockerfile",
 
   "customizations": {

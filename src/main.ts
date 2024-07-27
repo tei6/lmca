@@ -1,15 +1,15 @@
 import { Command } from 'commander';
 import { generateTestCode } from './command/generateTestCode';
 import { replaceCode } from './command/replaceCode';
-import { fillCode } from './command/fillCode'; // Import the new fillCode function
+import { fillCode } from './command/fillCode';
 import { OpenAIClient } from './client/openaiClient';
 
 const program = new Command();
 
 program
-  .name('my-llm-tools')
-  .description('A simple CLI tool that works with LLM')
-  .version('0.1.0');
+  .name('lmca')
+  .description('A tool that accelerates coding using the power of LLM.')
+  .version('0.1.1');
 
 program
   .command('gen-test')

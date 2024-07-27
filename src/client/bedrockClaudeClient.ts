@@ -1,6 +1,8 @@
 import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
 import { BaseChatLLMClient } from './llmClient';
 
+// https://docs.anthropic.com/en/api/claude-on-amazon-bedrock
+
 export class AnthropicBedrockClient extends BaseChatLLMClient {
   private client: AnthropicBedrock;
 

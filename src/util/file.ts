@@ -1,27 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export async function readFileOrEmpty(
-  filePath: string
-): Promise<string | undefined> {
-  try {
-    await fs.promises.access(filePath);
-    return await fs.promises.readFile(filePath, 'utf-8');
-  } catch (err) {
-    if (
-      err != null &&
-      typeof err === 'object' &&
-      'code' in err &&
-      err.code === 'ENOENT'
-    ) {
-      return undefined;
-    } else {
-      throw err;
-    }
-  }
+export interface FileHandler {
+  read(path: string): Promise<string>;
+  write(path: string, content: string): Promise<void>;
 }
 
-export async function writeToFile(
+export async function readFile(filePath: string): Promise<string> {
+  await fs.promises.access(filePath);
+  return await fs.promises.readFile(filePath, 'utf-8');
+}
+
+export async function writeFile(
   filePath: string,
   content: string
 ): Promise<void> {

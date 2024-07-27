@@ -1,15 +1,20 @@
 import dedent from 'dedent';
-import { readFileOrEmpty, writeToFile } from '../util/file';
 import { BaseChatLLMClient } from '../client/llmClient';
+
+export interface FileHandler {
+  readFile(path: string): Promise<string>;
+  writeFile(path: string, content: string): Promise<void>;
+}
 
 export async function generateTestCode(
   clientCreator: (systemPrompt: string) => BaseChatLLMClient,
+  fileHandler: FileHandler,
   srcPath: string,
   testPath: string,
   description?: string
 ): Promise<boolean> {
-  const srcContentPromise = readFileOrEmpty(srcPath);
-  const testContentPromise = readFileOrEmpty(testPath);
+  const srcContentPromise = fileHandler.readFile(srcPath);
+  const testContentPromise = fileHandler.readFile(testPath);
   const [srcContent, testContent] = await Promise.all([
     srcContentPromise,
     testContentPromise,
@@ -60,16 +65,15 @@ export async function generateTestCode(
 
     <test path=${testPath}>
     ${testContent ?? ''}
-    </test
+    </test>
   `);
 
   return client
     .chat(contentString)
     .then((testCode) =>
-      writeToFile(testPath, testCode)
-        .then(() => {
-          return true;
-        })
+      fileHandler
+        .writeFile(testPath, testCode)
+        .then(() => true)
         .catch((error) => {
           console.error('Error writing test file:', error);
           return false;

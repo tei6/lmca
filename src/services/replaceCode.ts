@@ -1,17 +1,14 @@
 import dedent from 'dedent';
-import { readFileOrEmpty, writeToFile } from '../util/file';
 import { BaseChatLLMClient } from '../client/llmClient';
+import { FileHandler } from '../util/file';
 
 export async function replaceCode(
   clientCreator: (systemPrompt: string) => BaseChatLLMClient,
+  fileHandler: FileHandler,
   srcPath: string,
   description: string
 ): Promise<boolean> {
-  const srcContent = await readFileOrEmpty(srcPath);
-
-  if (!srcContent) {
-    throw new Error(`Source file not found: ${srcPath}`);
-  }
+  const srcContent = await fileHandler.read(srcPath);
 
   const systemPrompt = dedent(`
     As an expert software engineer, follow the user's instructions to rewrite the provided code.
@@ -56,9 +53,10 @@ export async function replaceCode(
 
   try {
     const newCode = await client.chat(contentString);
-    await writeToFile(srcPath, newCode);
+    await fileHandler.write(srcPath, newCode);
     return true;
   } catch (error) {
+    console.error('Error writing new code to file:', error);
     return false;
   }
 }

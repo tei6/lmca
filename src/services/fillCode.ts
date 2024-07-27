@@ -1,17 +1,14 @@
 import dedent from 'dedent';
-import { readFileOrEmpty, writeToFile } from '../util/file';
 import { BaseChatLLMClient } from '../client/llmClient';
+import { FileHandler } from '../util/file';
 
 export async function fillCode(
   clientCreator: (systemPrompt: string) => BaseChatLLMClient,
+  fileHandler: FileHandler,
   srcPath: string,
   description: string
 ): Promise<boolean> {
-  const srcContent = await readFileOrEmpty(srcPath);
-
-  if (!srcContent) {
-    throw new Error(`Source file not found: ${srcPath}`);
-  }
+  const srcContent = await fileHandler.read(srcPath);
 
   const systemPrompt = dedent(`
     As an expert in content generation, follow the user's instructions to fill in the content within /* fill start */ and /* fill end */ comments.
@@ -36,7 +33,6 @@ export async function fillCode(
     Only include the necessary code or text that needs to be inserted.
     Do not include any additional comments, explanations, or code block indicators such as \`\`\`.
   `);
-
   const client = clientCreator(systemPrompt);
 
   const contentString = dedent(`
@@ -57,7 +53,7 @@ export async function fillCode(
         `/* fill start */\n${filledContent}\n/* fill end */`
       );
       try {
-        await writeToFile(srcPath, updatedContent);
+        await fileHandler.write(srcPath, updatedContent);
         return true;
       } catch (error) {
         console.error('Error writing to file:', error);

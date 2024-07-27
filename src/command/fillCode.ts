@@ -14,7 +14,7 @@ export async function fillCode(
   }
 
   const systemPrompt = dedent(`
-    As an expert in content generation, follow the user's instructions to fill in the content within <fill></fill> tags.
+    As an expert in content generation, follow the user's instructions to fill in the content within /* fill start */ and /* fill end */ comments.
     
     The user will provide instructions in the following format:
     - description tag: This provides instructions about the context or specific information to be considered for content generation.
@@ -26,12 +26,15 @@ export async function fillCode(
     </description>
 
     <src>
-    <fill></fill>
+    /* fill start */
+    /* fill end */
     </src>
     \`\`\`
 
-    Output only the content to be filled within the <fill></fill> tags. 
-    DO NOT include the \`\`\` that indicates the start and end of a code block.
+    Output only the content to be filled between the /* fill start */ and /* fill end */ comments. 
+    DO NOT include the /* fill start */ and /* fill end */ comments themselves.
+    Only include the necessary code or text that needs to be inserted.
+    Do not include any additional comments, explanations, or code block indicators such as \`\`\`.
   `);
 
   const client = clientCreator(systemPrompt);
@@ -50,8 +53,8 @@ export async function fillCode(
     .chat(contentString)
     .then(async (filledContent) => {
       const updatedContent = srcContent.replace(
-        /<fill>(.*?)<\/fill>/gs,
-        `<fill>${filledContent}</fill>`
+        /\/\* fill start \*\/(.*?)\/\* fill end \*\//gs,
+        `/* fill start */\n${filledContent}\n/* fill end */`
       );
       try {
         await writeToFile(srcPath, updatedContent);

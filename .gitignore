@@ -1,6 +1,7 @@
 node_modules/
 dist/
 lib/
+temp/
 npm-debug.log*
 *.tsbuildinfo
 logs/

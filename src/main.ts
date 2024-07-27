@@ -1,8 +1,9 @@
 import { Command } from 'commander';
-import { generateTestCode } from './command/generateTestCode';
-import { replaceCode } from './command/replaceCode';
-import { fillCode } from './command/fillCode';
+import { fillCode } from './services/fillCode';
 import { OpenAIClient } from './client/openaiClient';
+import { readFile, writeFile } from './util/file';
+import { generateTestCode } from './services/generateTestCode';
+import { replaceCode } from './services/replaceCode';
 
 const program = new Command();
 
@@ -31,6 +32,11 @@ program
     if (srcPath && testPath) {
       await generateTestCode(
         (systemPrompt: string) => new OpenAIClient({ systemPrompt }),
+        {
+          readFile: async (filePath: string) => readFile(filePath),
+          writeFile: async (filePath: string, content: string) =>
+            writeFile(filePath, content),
+        },
         srcPath,
         testPath,
         description
@@ -57,6 +63,11 @@ program
     if (srcPath && description) {
       await replaceCode(
         (systemPrompt: string) => new OpenAIClient({ systemPrompt }),
+        {
+          read: async (filePath: string) => readFile(filePath),
+          write: async (filePath: string, content: string) =>
+            writeFile(filePath, content),
+        },
         srcPath,
         description
       );
@@ -84,6 +95,11 @@ program
     if (srcPath && description) {
       await fillCode(
         (systemPrompt: string) => new OpenAIClient({ systemPrompt }),
+        {
+          read: async (filePath: string) => readFile(filePath),
+          write: async (filePath: string, content: string) =>
+            writeFile(filePath, content),
+        },
         srcPath,
         description
       );

@@ -34,7 +34,7 @@
     "@anthropic-ai/bedrock-sdk": "^0.10.1",
     "commander": "^12.1.0",
     "dedent": "^1.5.3",
-    "openai": "^4.53.2"
+    "openai": "^4.54.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
